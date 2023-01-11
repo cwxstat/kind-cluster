@@ -9,6 +9,7 @@ help: ## display make targets
 
 .PHONY: up-kind
 up-kind: ## setup local kind cluster.
+	@bash -c "./scripts/create-kind-config.sh"
 	@bash -c "kind create cluster --config infra/local/kind-config-with-mounts.yaml"
 	@bash -c "echo 'installing cert-manager'"
 	@bash -c "echo '.... cert-manager may take a few minutes'"
@@ -106,3 +107,11 @@ argo-cd-password: ## get argo-cd password
 .PHONY: down-kind
 down-kind: ## tear down local kind cluster
 	@bash -c "kind delete cluster"
+
+
+
+.PHONY: list-port-forwards
+list-port-forwards: ## List common commands
+	@bash -c "kubectl -n argocd port-forward service/argocd-server 3000:80"
+
+
