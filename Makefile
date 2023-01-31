@@ -22,6 +22,7 @@ up-kind: ## setup local kind cluster.
 
 .PHONY: helm-prep
 helm-prep: ## helm-prep
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
 	@bash -c "helm repo add stable https://charts.helm.sh/stable"
 	@bash -c "helm repo add stable https://charts.helm.sh/stable"
@@ -30,6 +31,7 @@ helm-prep: ## helm-prep
 
 .PHONY: install-prometheus
 install-prometheus: ## install-prometheus
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns monitoring"
 	@bash -c "helm install kind-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set prometheus.service.type=NodePort --set grafana.service.nodePort=31000 --set grafana.service.type=NodePort --set alertmanager.service.nodePort=32000 --set alertmanager.service.type=NodePort --set prometheus-node-exporter.service.nodePort=32001 --set prometheus-node-exporter.service.type=NodePort"
 	@bash -c "echo 'Port-forward'"
@@ -39,20 +41,39 @@ install-prometheus: ## install-prometheus
 
 .PHONY: install-argo
 install-argo: ## install argo
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns argo"
 	@bash -c "kubectl apply -n argo -f infra/local/argo-workflow-v3.4.1.secure.yaml"
 	@bash -c "kubectl wait deployment -n argo argo-server --for condition=Available=True --timeout=120s"
 	@bash -c "kubectl wait deployment -n argo workflow-controller --for condition=Available=True --timeout=120s"
 
 
+.PHONY: install-argo-events
+install-argo-events: ## install argo-events
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "kubectl create ns argo-events"
+	@bash -c "kubectl apply  -f infra/local/argo-events0.yaml"
+	@bash -c "kubectl apply  -f infra/local/argo-events-install-validating-webhook.yaml"
+
+.PHONY: remove-argo-events
+remove-argo-events: ## remove argo-events
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "kubectl delete  -f infra/local/argo-events0.yaml"
+	@bash -c "kubectl delete  -f infra/local/argo-events-install-validating-webhook.yaml"
+	@bash -c "kubectl delete ns argo-events"
+
+
+
 
 .PHONY: patch-auth-mode
 patch-auth-mode: ## patch auth-mode
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "./infra/local/patch.sh"
 
 
 .PHONY: port-forward
 port-forward: ## port-forward
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "echo 'kubectl -n argo port-forward deployment.apps/argo-server 2746:2746'"
 	@bash -c "echo -e '\n\n Chrome type in:  thisisunsafe\n\n'"
 	@bash -c "kubectl -n argo port-forward deployment.apps/argo-server 2746:2746"	
@@ -61,12 +82,14 @@ port-forward: ## port-forward
 
 .PHONY: remove-argo
 remove-argo: ## install argo
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl delete -n argo -f infra/local/argo-workflow-v3.4.1.secure.yaml"
 	@bash -c "kubectl delete ns argo"
 
 
 .PHONY: roles-argo
-roles-argo: ## create roles in argo 
+roles-argo: ## create roles in argo
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create sa cicd -n argo"
 	@bash -c "kubectl create rolebinding cicd --role=argo-role --serviceaccount=argo:cicd"
 	@bash -c "kubectl create clusterrolebinding cr-cicd-argo --clusterrole=argo-cluster-role --serviceaccount=argo:cicd"
@@ -74,7 +97,8 @@ roles-argo: ## create roles in argo
 
 
 .PHONY: remove-roles-argo
-remove-roles-argo: ## create roles in argo 
+remove-roles-argo: ## create roles in argo
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl delete sa cicd -n argo"
 	@bash -c "kubectl delete rolebinding cicd"
 	@bash -c "kubectl delete clusterrolebinding cr-cicd-argo"
@@ -82,6 +106,7 @@ remove-roles-argo: ## create roles in argo
 
 .PHONY: roles-dev
 roles-dev: ## create roles in argo
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns dev"
 	@bash -c "kubectl create sa cicd -n dev"
 	@bash -c "kubectl create rolebinding cicd --role=argo-role --serviceaccount=dev:cicd -n dev"
@@ -91,6 +116,7 @@ roles-dev: ## create roles in argo
 
 .PHONY: argo-cd
 argo-cd: ## install argo-cd
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns argocd"
 	@bash -c "kubectl apply -n argocd -f infra/local/argo-cd.yaml"
 	@bash -c "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo"
@@ -98,6 +124,7 @@ argo-cd: ## install argo-cd
 
 .PHONY: argo-cd-password
 argo-cd-password: ## get argo-cd password
+	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "echo 'user: admin'"
 	@bash -c "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo"
 
