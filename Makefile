@@ -9,7 +9,7 @@ help: ## display make targets
 
 .PHONY: up-kind
 up-kind: ## setup local kind cluster.
-	@bash -c "kind create cluster --config infra/local/kind-config-with-mounts.yaml"
+	@bash -c "kind create cluster --config infra/local/kind-ingress.yaml"
 	@bash -c "echo 'installing cert-manager'"
 	@bash -c "echo '.... cert-manager may take a few minutes'"
 	@bash -c "kubectl apply -f infra/local/cert-manager.yaml 2>&1 >/dev/null"
@@ -18,6 +18,14 @@ up-kind: ## setup local kind cluster.
 	@bash -c "kubectl apply -f infra/local/metrics_server.yaml 2>&1 >/dev/null"
 	@bash -c "kubectl wait deployment -n kube-system metrics-server --for condition=Available=True --timeout=120s"
 
+
+.PHONY: ingress
+ingress: ## setup cluster for ingress
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "echo 'installing ingress'"
+	@bash -c "echo '.... ingress may take a few minutes'"
+	@bash -c "kubectl apply -f infra/local/nginx-ingress.yaml 2>&1 >/dev/null"
+	@bash -c "kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s"
 
 
 .PHONY: helm-prep
