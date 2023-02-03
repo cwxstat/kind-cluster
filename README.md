@@ -8,13 +8,16 @@ To use this, you'll need to install KinD and Helm.
 
 
 ```bash
+$ make
 
-$ make help
  make help                 -> display make targets
  make up-kind              -> setup local kind cluster.
+ make ingress              -> setup cluster for ingress
  make helm-prep            -> helm-prep
  make install-prometheus   -> install-prometheus
  make install-argo         -> install argo
+ make install-argo-events  -> install argo-events
+ make remove-argo-events   -> remove argo-events
  make patch-auth-mode      -> patch auth-mode
  make port-forward         -> port-forward
  make remove-argo          -> install argo
@@ -24,5 +27,6 @@ $ make help
  make argo-cd              -> install argo-cd
  make argo-cd-password     -> get argo-cd password
  make down-kind            -> tear down local kind cluster
+ 
 
 ```

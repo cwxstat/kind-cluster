@@ -1,0 +1,16 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: dev-app
+  labels:
+    app: simple
+spec:
+  containers:
+    - command:
+        - /bin/bash
+        - -c
+        - |
+          echo "Hello World"
+          sleep 36d
+      image: mchirico/ubuntu:latest
+      name: dev-app

@@ -1,0 +1,28 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: simple-service
+spec:
+  selector:
+    app: simple
+  ports:
+    # Default port used by the image
+    - port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simple-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /(.*)
+        backend:
+          service:
+            name: simple-service
+            port:
+              number: 8080
