@@ -9,7 +9,7 @@ help: ## display make targets
 
 .PHONY: up-kind
 up-kind: ## setup local kind cluster.
-	@bash -c "kind create cluster --config infra/local/kind-ingress.yaml"
+	@bash -c "kind create cluster --config infra/local/kind-config-with-mounts.yaml"
 	@bash -c "echo 'installing cert-manager'"
 	@bash -c "echo '.... cert-manager may take a few minutes'"
 	@bash -c "kubectl apply -f infra/local/cert-manager.yaml 2>&1 >/dev/null"

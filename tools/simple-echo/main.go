@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -54,11 +54,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	b.Reset()
 
-	buf, _ := ioutil.ReadAll(r.Body)
+	buf, _ := io.ReadAll(r.Body)
 	// b = bytes.NewBuffer(buf)
 	body := string(buf)
 
-	b.Reset()
 	t := struct {
 		Req     *http.Request
 		Headers string
