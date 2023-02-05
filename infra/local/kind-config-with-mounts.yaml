@@ -4,6 +4,10 @@ nodes:
 - role: control-plane
   kubeadmConfigPatches:
   - |
+    kind: ClusterConfiguration
+    apiServer:
+        extraArgs:
+          enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
     kind: InitConfiguration
     nodeRegistration:
       kubeletExtraArgs:
