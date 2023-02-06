@@ -10,7 +10,7 @@ To use this, you'll need to install KinD and Helm.
 ```bash
 $ make
 
- make help                 -> display make targets
+make help                 -> display make targets
  make up-kind              -> setup local kind cluster.
  make ingress              -> setup cluster for ingress
  make helm-prep            -> helm-prep
@@ -18,16 +18,17 @@ $ make
  make install-argo         -> install argo
  make install-argo-events  -> install argo-events
  make install-tekton       -> install tekton
- make remove-argo-events   -> remove argo-events
  make patch-auth-mode      -> patch auth-mode
  make port-forward         -> port-forward
- make remove-argo          -> install argo
  make roles-argo           -> create roles in argo
- make remove-roles-argo    -> create roles in argo
  make roles-dev            -> create roles in argo
  make argo-cd              -> install argo-cd
  make argo-cd-password     -> get argo-cd password
+ make remove-argo          -> install argo
+ make remove-argo-events   -> remove argo-events
+ make remove-roles-argo    -> create roles in argo
  make down-kind            -> tear down local kind cluster
+ 
 
 
 ```
