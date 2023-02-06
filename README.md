@@ -10,7 +10,7 @@ To use this, you'll need to install KinD and Helm.
 ```bash
 $ make
 
-make help                 -> display make targets
+ make help                 -> display make targets
  make up-kind              -> setup local kind cluster.
  make ingress              -> setup cluster for ingress
  make helm-prep            -> helm-prep
