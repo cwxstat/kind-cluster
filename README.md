@@ -17,6 +17,7 @@ $ make
  make install-prometheus   -> install-prometheus
  make install-argo         -> install argo
  make install-argo-events  -> install argo-events
+ make install-tekton       -> install tekton
  make remove-argo-events   -> remove argo-events
  make patch-auth-mode      -> patch auth-mode
  make port-forward         -> port-forward
@@ -27,6 +28,36 @@ $ make
  make argo-cd              -> install argo-cd
  make argo-cd-password     -> get argo-cd password
  make down-kind            -> tear down local kind cluster
- 
+
+
+```
+
+# Instructions on building Kubernetes from source
+
+
+
+## Step 1:
+
+Close source code, and ckeckout the release you want to build.
+
+```bash
+git clone https://github.com/kubernetes/kubernetes.git
+cd kubernetes
+git checkout release-1.26
+```
+
+
+## Step 2:
+
+Build. You'll need to be in the kubernetes directory. 
+
+```bash
+kind build node-image . 
+```
+
+## Step 3: (run it)
+
+```bash
+kind create cluster --name v2.6 --image kindest/node:latest
 
 ```
