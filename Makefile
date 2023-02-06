@@ -63,6 +63,24 @@ install-argo-events: ## install argo-events
 	@bash -c "kubectl apply  -f infra/local/argo-events0.yaml"
 	@bash -c "kubectl apply  -f infra/local/argo-events-install-validating-webhook.yaml"
 
+
+.PHONY: install-tekton
+install-tekton: ## install tekton
+	@bash -c "echo 'installing tekton: pipelines, triggers, interceptors and read/write dashboard'"
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "kubectl apply  -f infra/local/tekton/pipelines.yaml"
+	@bash -c "kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=420s"
+	@bash -c "kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhook --for condition=Available=True --timeout=420s"
+	@bash -c "echo 'installing triggers and interceptors'"
+	@bash -c "kubectl apply -f infra/local/tekton/triggers.yaml"
+	@bash -c "kubectl apply -f infra/local/tekton/interceptors.yaml"
+	@bash -c "echo '... waiting for triggers and interceptors to be ready'"
+	@bash -c "kubectl wait deployment -n tekton-pipelines tekton-triggers-controller --for condition=Available=True --timeout=420s"
+	@bash -c "kubectl wait deployment -n tekton-pipelines tekton-triggers-webhook --for condition=Available=True --timeout=420s"
+	@bash -c "echo '...installing dashboard in read/write mode'"
+	@bash -c "kubectl apply -f infra/local/tekton/dashboard.yaml"
+	@bash -c "kubectl wait deployment -n tekton-pipelines tekton-dashboard --for condition=Available=True --timeout=420s"
+
 .PHONY: remove-argo-events
 remove-argo-events: ## remove argo-events
 	@bash -c "kubectl config set-cluster kind-kind"
