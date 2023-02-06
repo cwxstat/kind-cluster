@@ -81,15 +81,6 @@ install-tekton: ## install tekton
 	@bash -c "kubectl apply -f infra/local/tekton/dashboard.yaml"
 	@bash -c "kubectl wait deployment -n tekton-pipelines tekton-dashboard --for condition=Available=True --timeout=420s"
 
-.PHONY: remove-argo-events
-remove-argo-events: ## remove argo-events
-	@bash -c "kubectl config set-cluster kind-kind"
-	@bash -c "kubectl delete  -f infra/local/argo-events0.yaml"
-	@bash -c "kubectl delete  -f infra/local/argo-events-install-validating-webhook.yaml"
-	@bash -c "kubectl delete ns argo-events"
-
-
-
 
 .PHONY: patch-auth-mode
 patch-auth-mode: ## patch auth-mode
@@ -102,16 +93,8 @@ port-forward: ## port-forward
 	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "echo 'kubectl -n argo port-forward deployment.apps/argo-server 2746:2746'"
 	@bash -c "echo -e '\n\n Chrome type in:  thisisunsafe\n\n'"
-	@bash -c "kubectl -n argo port-forward deployment.apps/argo-server 2746:2746"	
+	@bash -c "kubectl -n argo port-forward deployment.apps/argo-server 2746:2746"
 	@bash -c "echo 'This will serve the user interface on https://localhost:2746'"
-
-
-.PHONY: remove-argo
-remove-argo: ## install argo
-	@bash -c "kubectl config set-cluster kind-kind"
-	@bash -c "kubectl delete -n argo -f infra/local/argo-workflow-v3.4.1.secure.yaml"
-	@bash -c "kubectl delete ns argo"
-
 
 .PHONY: roles-argo
 roles-argo: ## create roles in argo
@@ -121,14 +104,6 @@ roles-argo: ## create roles in argo
 	@bash -c "kubectl create clusterrolebinding cr-cicd-argo --clusterrole=argo-cluster-role --serviceaccount=argo:cicd"
 	@bash -c "kubectl create clusterrolebinding cr-template-cicd-argo --clusterrole=argo-clusterworkflowtemplate-role --serviceaccount=argo:cicd"
 
-
-.PHONY: remove-roles-argo
-remove-roles-argo: ## create roles in argo
-	@bash -c "kubectl config set-cluster kind-kind"
-	@bash -c "kubectl delete sa cicd -n argo"
-	@bash -c "kubectl delete rolebinding cicd"
-	@bash -c "kubectl delete clusterrolebinding cr-cicd-argo"
-	@bash -c "kubectl delete clusterrolebinding cr-template-cicd-argo'
 
 .PHONY: roles-dev
 roles-dev: ## create roles in argo
@@ -155,6 +130,28 @@ argo-cd-password: ## get argo-cd password
 	@bash -c "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo"
 
 
+.PHONY: remove-argo
+remove-argo: ## install argo
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "kubectl delete -n argo -f infra/local/argo-workflow-v3.4.1.secure.yaml"
+	@bash -c "kubectl delete ns argo"
+
+
+.PHONY: remove-argo-events
+remove-argo-events: ## remove argo-events
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "kubectl delete  -f infra/local/argo-events0.yaml"
+	@bash -c "kubectl delete  -f infra/local/argo-events-install-validating-webhook.yaml"
+	@bash -c "kubectl delete ns argo-events"
+
+
+.PHONY: remove-roles-argo
+remove-roles-argo: ## create roles in argo
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "kubectl delete sa cicd -n argo"
+	@bash -c "kubectl delete rolebinding cicd"
+	@bash -c "kubectl delete clusterrolebinding cr-cicd-argo"
+	@bash -c "kubectl delete clusterrolebinding cr-template-cicd-argo'
 
 .PHONY: down-kind
 down-kind: ## tear down local kind cluster
