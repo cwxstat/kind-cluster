@@ -51,7 +51,7 @@ install-prometheus: ## install-prometheus
 install-argo: ## install argo
 	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns argo"
-	@bash -c "kubectl apply -n argo -f infra/local/argo-workflow-v3.4.1.secure.yaml"
+	@bash -c "kubectl apply -n argo -f infra/local/quick-start-postgres-v3.4.5.yaml"
 	@bash -c "kubectl wait deployment -n argo argo-server --for condition=Available=True --timeout=120s"
 	@bash -c "kubectl wait deployment -n argo workflow-controller --for condition=Available=True --timeout=120s"
 
