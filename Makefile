@@ -25,7 +25,7 @@ ingress: ## setup cluster for ingress
 	@bash -c "echo 'installing ingress'"
 	@bash -c "echo '.... ingress may take a few minutes'"
 	@bash -c "kubectl apply -f infra/local/nginx-ingress.yaml 2>&1 >/dev/null"
-	@bash -c "kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s"
+	@bash -c "kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=190s"
 
 
 .PHONY: helm-prep
@@ -52,8 +52,8 @@ install-argo: ## install argo
 	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns argo"
 	@bash -c "kubectl apply -n argo -f infra/local/quick-start-postgres-v3.4.5.yaml"
-	@bash -c "kubectl wait deployment -n argo argo-server --for condition=Available=True --timeout=120s"
-	@bash -c "kubectl wait deployment -n argo workflow-controller --for condition=Available=True --timeout=120s"
+	@bash -c "kubectl wait deployment -n argo argo-server --for condition=Available=True --timeout=420s"
+	@bash -c "kubectl wait deployment -n argo workflow-controller --for condition=Available=True --timeout=420s"
 
 
 .PHONY: install-argo-events
