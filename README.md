@@ -11,6 +11,7 @@ To use this, you'll need to install KinD and Helm.
 $ make
 
  make help                 -> display make targets
+ make build-all            -> Multiple Steps: up-kind Complete configure kind cluster
  make up-kind              -> setup local kind cluster.
  make ingress              -> setup cluster for ingress
  make helm-prep            -> helm-prep
