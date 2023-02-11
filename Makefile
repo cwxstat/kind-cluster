@@ -6,6 +6,18 @@ help: ## display make targets
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m make %-20s -> %s\n\033[0m", $$1, $$2}'
 
 
+.PHONY: build-all
+build-all: up-kind ingress install-prometheus install-argo install-argo-events install-tekton patch-auth-mode roles-argo roles-dev argo-cd ## up-kind Complete configure kind cluster
+	@bash -c "kind create cluster --config infra/local/kind-config-with-mounts.yaml"
+	@bash -c "echo 'installing cert-manager'"
+	@bash -c "echo '.... cert-manager may take a few minutes'"
+	@bash -c "kubectl apply -f infra/local/cert-manager.yaml 2>&1 >/dev/null"
+	@bash -c "kubectl wait deployment -n cert-manager cert-manager-webhook --for condition=Available=True --timeout=120s"
+	@bash -c "echo 'installing metrics server'"
+	@bash -c "kubectl apply -f infra/local/metrics_server.yaml 2>&1 >/dev/null"
+	@bash -c "kubectl wait deployment -n kube-system metrics-server --for condition=Available=True --timeout=120s"
+
+
 
 .PHONY: up-kind
 up-kind: ## setup local kind cluster.
@@ -51,7 +63,7 @@ install-prometheus: ## install-prometheus
 install-argo: ## install argo
 	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns argo"
-	@bash -c "kubectl apply -n argo -f infra/local/quick-start-postgres-v3.4.5.yaml"
+	@bash -c "kubectl apply -n argo -f infra/local/quick-start-postgres-v3.4.5.plugins.yaml"
 	@bash -c "kubectl wait deployment -n argo argo-server --for condition=Available=True --timeout=420s"
 	@bash -c "kubectl wait deployment -n argo workflow-controller --for condition=Available=True --timeout=420s"
 
@@ -120,7 +132,7 @@ argo-cd: ## install argo-cd
 	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "kubectl create ns argocd"
 	@bash -c "kubectl apply -n argocd -f infra/local/argo-cd.yaml"
-	@bash -c "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo"
+#	@bash -c "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo"
 
 
 .PHONY: argo-cd-password
