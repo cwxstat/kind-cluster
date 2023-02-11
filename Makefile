@@ -7,7 +7,7 @@ help: ## display make targets
 
 
 .PHONY: build-all
-build-all: up-kind ingress install-prometheus install-argo install-argo-events install-tekton patch-auth-mode roles-argo roles-dev argo-cd ## up-kind Complete configure kind cluster
+build-all: up-kind ingress install-prometheus install-argo install-argo-events install-tekton patch-auth-mode roles-argo roles-dev argo-cd ## Multiple Steps: up-kind Complete configure kind cluster
 	@bash -c "kind create cluster --config infra/local/kind-config-with-mounts.yaml"
 	@bash -c "echo 'installing cert-manager'"
 	@bash -c "echo '.... cert-manager may take a few minutes'"
