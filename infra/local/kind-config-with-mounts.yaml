@@ -1,5 +1,7 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
+runtimeConfig:
+  "api/alpha": "true"
 nodes:
 - role: control-plane
   kubeadmConfigPatches:
@@ -7,7 +9,7 @@ nodes:
     kind: ClusterConfiguration
     apiServer:
         extraArgs:
-          enable-admission-plugins: NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
+          enable-admission-plugins: NodeRestriction,PodPreset,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
     kind: InitConfiguration
     nodeRegistration:
       kubeletExtraArgs:
