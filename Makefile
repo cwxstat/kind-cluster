@@ -7,7 +7,7 @@ help: ## display make targets
 
 
 .PHONY: build-all
-build-all: up-kind ingress install-prometheus install-argo install-argo-events install-tekton patch-auth-mode roles-argo roles-dev argo-cd ## Multiple Steps: up-kind Complete configure kind cluster
+build-all: up-kind ingress install-prometheus install-argo install-argo-events install-tekton patch-auth-mode roles-argo roles-dev argo-cd ##  ===> (Multiple Steps: up-kind Complete configure kind cluster)
 	@bash -c "kind create cluster --config infra/local/kind-config-with-mounts.yaml"
 	@bash -c "echo 'installing cert-manager'"
 	@bash -c "echo '.... cert-manager may take a few minutes'"
@@ -140,6 +140,20 @@ argo-cd-password: ## get argo-cd password
 	@bash -c "kubectl config set-cluster kind-kind"
 	@bash -c "echo 'user: admin'"
 	@bash -c "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo"
+
+
+.PHONY: dashboard
+dashboard: ## install dashboard
+	@bash -c "echo 'installing dashboard'"
+	@bash -c "kubectl config set-cluster kind-kind"
+	@bash -c "kubectl apply  -f infra/local/dashboard/dashboard-2.7.0.yaml"
+	@bash -c "kubectl wait deployment -n kubernetes-dashboard kubernetes-dashboard --for condition=Available=True --timeout=420s"
+	@bash -c "kubectl wait deployment -n kubernetes-dashboard dashboard-metrics-scraper --for condition=Available=True --timeout=420s"
+	@bash -c "echo 'creating service accounts'"
+	@bash -c "kubectl create serviceaccount -n kubernetes-dashboard admin-user"
+	@bash -c "kubectl create clusterrolebinding -n kubernetes-dashboard admin-user --clusterrole cluster-admin --serviceaccount=kubernetes-dashboard:admin-user"
+	@bash -c "echo 'To get token: token=$(kubectl -n kubernetes-dashboard create token admin-user)'"
+	@bash -c "echo 'to login: kubectl proxy'"
 
 
 .PHONY: remove-argo
