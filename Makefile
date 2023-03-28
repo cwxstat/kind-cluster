@@ -57,6 +57,8 @@ install-prometheus: ## install-prometheus
 	@bash -c "echo 'Port-forward'"
 	@bash -c "echo 'k -n monitoring port-forward service/alertmanager-operated 9093:9093'"
 	@bash -c "echo 'k -n monitoring port-forward service/kind-prometheus-grafana 3000:80'"
+	@bash -c "echo 'user: admin password: prom-operator'"
+
 
 
 .PHONY: install-argo
